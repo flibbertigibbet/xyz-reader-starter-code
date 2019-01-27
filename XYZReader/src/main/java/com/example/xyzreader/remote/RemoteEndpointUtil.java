@@ -49,7 +49,7 @@ public class RemoteEndpointUtil {
         return null;
     }
 
-    static String fetchPlainText(URL url) throws IOException {
+    private static String fetchPlainText(URL url) throws IOException {
 
         // handle GitHub requiring TLS 1.2 on older APIs
         // https://github.com/square/okhttp/issues/2372
