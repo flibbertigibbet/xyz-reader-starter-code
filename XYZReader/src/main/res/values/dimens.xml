@@ -5,7 +5,13 @@
     <item name="detail_body_line_spacing_multiplier" format="float" type="fraction">1.25</item>
 
     <dimen name="fab_elevation">2dp</dimen>
+    <dimen name="subhead_bottom_padding">4dp</dimen>
     <dimen name="fab_press_translation_z">6dp</dimen>
+    <dimen name="list_item_padding">16dp</dimen>
     <dimen name="fab_margin">24dp</dimen>
+    <dimen name="image_button_size">56dp</dimen>
+    <dimen name="toolbar_height">112dp</dimen>
+    <dimen name="recycler_top_padding">116dp</dimen>
+    <dimen name="recycler_bottom_padding">28dp</dimen>
 
 </resources>
