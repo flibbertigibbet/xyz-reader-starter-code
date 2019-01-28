@@ -19,6 +19,7 @@ import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.xyzreader.R;
@@ -50,6 +51,7 @@ public class ArticleListActivity extends AppCompatActivity implements
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
+    private ProgressBar mProgressBar;
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat(DISPLAY_DATE_FORMAT, Locale.getDefault());
     // Use default locale format
@@ -78,6 +80,9 @@ public class ArticleListActivity extends AppCompatActivity implements
 
         mRecyclerView = findViewById(R.id.recycler_view);
         LoaderManager.getInstance(this).initLoader(0, null, this);
+
+        mProgressBar = findViewById(R.id.swipe_refresh_progressbar);
+        mProgressBar.setIndeterminate(true);
 
         if (savedInstanceState == null) {
             refresh();
@@ -114,6 +119,19 @@ public class ArticleListActivity extends AppCompatActivity implements
     };
 
     private void updateRefreshingUI() {
+        if (mIsRefreshing) {
+            mSwipeRefreshLayout.setVisibility(View.INVISIBLE);
+            mProgressBar.setVisibility(View.VISIBLE);
+            mProgressBar.bringToFront();
+            mProgressBar.invalidate();
+        } else {
+            mProgressBar.setVisibility(View.INVISIBLE);
+            mSwipeRefreshLayout.setVisibility(View.VISIBLE);
+            mSwipeRefreshLayout.bringToFront();
+            mSwipeRefreshLayout.invalidate();
+        }
+
+        mSwipeRefreshLayout.getParent().requestLayout();
         mSwipeRefreshLayout.setRefreshing(mIsRefreshing);
     }
 
@@ -127,6 +145,7 @@ public class ArticleListActivity extends AppCompatActivity implements
     public void onLoadFinished(@NonNull android.support.v4.content.Loader<Cursor> loader, Cursor cursor) {
         Adapter adapter = new Adapter(cursor);
         adapter.setHasStableIds(true);
+
         mRecyclerView.setAdapter(adapter);
         int columnCount = getResources().getInteger(R.integer.list_column_count);
         StaggeredGridLayoutManager sglm =
