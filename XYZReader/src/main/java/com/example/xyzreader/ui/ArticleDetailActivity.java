@@ -13,6 +13,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,8 @@ import com.google.android.gms.security.ProviderInstaller;
 public class ArticleDetailActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<Cursor> {
 
+    private static final String TAG = "ArticleDetailActivity";
+
     private Cursor mCursor;
     private long mStartId;
 
@@ -46,6 +49,14 @@ public class ArticleDetailActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (savedInstanceState == null) {
+            if (getIntent() != null && getIntent().getData() != null) {
+                mStartId = ItemsContract.Items.getItemId(getIntent().getData());
+                mSelectedItemId = mStartId;
+            }
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().getDecorView().setSystemUiVisibility(
                     View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
@@ -111,19 +122,12 @@ public class ArticleDetailActivity extends AppCompatActivity
                 }
             });
         }
-
-        if (savedInstanceState == null) {
-            if (getIntent() != null && getIntent().getData() != null) {
-                mStartId = ItemsContract.Items.getItemId(getIntent().getData());
-                mSelectedItemId = mStartId;
-            }
-        }
     }
 
     @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int i, @Nullable Bundle bundle) {
-        return ArticleLoader.newAllArticlesInstance(this);
+        return ArticleLoader.newInstanceForItemId(this, mStartId);
     }
 
     @Override
@@ -131,19 +135,12 @@ public class ArticleDetailActivity extends AppCompatActivity
         mCursor = cursor;
         mPagerAdapter.notifyDataSetChanged();
 
-        // Select the start ID
-        if (mStartId > 0) {
+        if (mCursor.getCount() > 0) {
             mCursor.moveToFirst();
-            // TODO: optimize
-            while (!mCursor.isAfterLast()) {
-                if (mCursor.getLong(ArticleLoader.Query._ID) == mStartId) {
-                    final int position = mCursor.getPosition();
-                    mPager.setCurrentItem(position, false);
-                    break;
-                }
-                mCursor.moveToNext();
-            }
-            mStartId = 0;
+            final int position = mCursor.getPosition();
+            mPager.setCurrentItem(position, false);
+        } else {
+            Log.e(TAG, "Could no find record for " + mStartId);
         }
     }
 
