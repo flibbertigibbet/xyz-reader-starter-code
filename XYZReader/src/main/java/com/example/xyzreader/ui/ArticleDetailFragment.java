@@ -62,6 +62,8 @@ public class ArticleDetailFragment extends Fragment implements
     private boolean mIsCard = false;
     private int mStatusBarFullOpacityBottom;
 
+    private String mArticleTitle;
+
     private SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_DISPLAY_FORMAT,
             Locale.getDefault());
     // Use default locale format
@@ -147,7 +149,7 @@ public class ArticleDetailFragment extends Fragment implements
             public void onClick(View view) {
                 startActivity(Intent.createChooser(ShareCompat.IntentBuilder.from(getActivity())
                         .setType("text/plain")
-                        .setText("Some sample text")
+                        .setText(String.format(getString(R.string.action_share_text), mArticleTitle))
                         .getIntent(), getString(R.string.action_share)));
             }
         });
@@ -212,7 +214,8 @@ public class ArticleDetailFragment extends Fragment implements
             mRootView.setAlpha(0);
             mRootView.setVisibility(View.VISIBLE);
             mRootView.animate().alpha(1);
-            titleView.setText(mCursor.getString(ArticleLoader.Query.TITLE));
+            mArticleTitle = mCursor.getString(ArticleLoader.Query.TITLE);
+            titleView.setText(mArticleTitle);
             Date publishedDate = parsePublishedDate();
             if (!publishedDate.before(START_OF_EPOCH.getTime())) {
                 bylineView.setText(Html.fromHtml(

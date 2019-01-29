@@ -10,5 +10,6 @@
     <string name="up">Up</string>
     <string name="byline"><font color="@color/white" />%1$s by %2$s</string>
     <string name="not_applicable">N/A</string>
+    <string name="action_share_text">A great article: %1$s</string>
 
 </resources>
