@@ -22,4 +22,9 @@
     <color name="theme_primary_dark">#04561A</color>
     <color name="theme_accent">#04561A</color>
     <color name="ltgray">#ffe0e0e0</color>
+
+    <color name="white">#fff</color>
+    <color name="black">#000</color>
+    <color name="meta_bar_background">#333</color>
+    <color name="byline_background">#8fff</color>
 </resources>
