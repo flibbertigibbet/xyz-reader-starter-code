@@ -2,6 +2,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <ImageView
+        android:src="@drawable/empty_detail"
+        android:scaleType="centerInside"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
     <ProgressBar
         android:id="@+id/article_detail_progressbar"
         android:indeterminate="true"
