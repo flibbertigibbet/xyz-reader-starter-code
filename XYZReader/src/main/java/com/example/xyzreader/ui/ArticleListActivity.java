@@ -77,12 +77,10 @@ public class ArticleListActivity extends AppCompatActivity implements
         }
 
         mSwipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
+        mProgressBar = findViewById(R.id.swipe_refresh_progressbar);
 
         mRecyclerView = findViewById(R.id.recycler_view);
         LoaderManager.getInstance(this).initLoader(0, null, this);
-
-        mProgressBar = findViewById(R.id.swipe_refresh_progressbar);
-        mProgressBar.setIndeterminate(true);
 
         if (savedInstanceState == null) {
             refresh();

@@ -20,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.android.volley.VolleyError;
@@ -27,10 +28,12 @@ import com.android.volley.toolbox.ImageLoader;
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 
 /**
  * A fragment representing a single Article detail screen. This fragment is
@@ -40,6 +43,7 @@ import java.util.GregorianCalendar;
 public class ArticleDetailFragment extends Fragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
     private static final String TAG = "ArticleDetailFragment";
+    private static final String DATE_DISPLAY_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.sss";
 
     public static final String ARG_ITEM_ID = "item_id";
     private static final float PARALLAX_FACTOR = 1.25f;
@@ -47,10 +51,10 @@ public class ArticleDetailFragment extends Fragment implements
     private Cursor mCursor;
     private long mItemId;
     private View mRootView;
-    private int mMutedColor = 0xFF333333;
     private ObservableScrollView mScrollView;
     private DrawInsetsCoordinatorLayout mDrawInsetsCoordinatorLayout;
     private ColorDrawable mStatusBarColorDrawable;
+    private ProgressBar mProgressBar;
 
     private int mTopInset;
     private View mPhotoContainerView;
@@ -59,9 +63,10 @@ public class ArticleDetailFragment extends Fragment implements
     private boolean mIsCard = false;
     private int mStatusBarFullOpacityBottom;
 
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss");
+    private SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_DISPLAY_FORMAT,
+            Locale.getDefault());
     // Use default locale format
-    private SimpleDateFormat outputFormat = new SimpleDateFormat();
+    private DateFormat outputFormat = SimpleDateFormat.getDateTimeInstance();
     // Most time functions can only handle 1902 - 2037
     private GregorianCalendar START_OF_EPOCH = new GregorianCalendar(2,1,1);
 
@@ -84,7 +89,7 @@ public class ArticleDetailFragment extends Fragment implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments().containsKey(ARG_ITEM_ID)) {
+        if (getArguments() != null && getArguments().containsKey(ARG_ITEM_ID)) {
             mItemId = getArguments().getLong(ARG_ITEM_ID);
         }
 
@@ -122,6 +127,8 @@ public class ArticleDetailFragment extends Fragment implements
             }
         });
 
+        // the progress bar is in the parent activity view (not this root view)
+        mProgressBar = getActivity().findViewById(R.id.article_detail_progressbar);
         mScrollView = mRootView.findViewById(R.id.scrollview);
         mScrollView.setCallbacks(new ObservableScrollView.Callbacks() {
             @Override
@@ -160,6 +167,7 @@ public class ArticleDetailFragment extends Fragment implements
             float f = progress(mScrollY,
                     mStatusBarFullOpacityBottom - mTopInset * 3,
                     mStatusBarFullOpacityBottom - mTopInset);
+            int mMutedColor = 0xFF333333;
             color = Color.argb((int) (255 * f),
                     (int) (Color.red(mMutedColor) * 0.9),
                     (int) (Color.green(mMutedColor) * 0.9),
@@ -199,10 +207,10 @@ public class ArticleDetailFragment extends Fragment implements
             return;
         }
 
-        TextView titleView = (TextView) mRootView.findViewById(R.id.article_title);
-        TextView bylineView = (TextView) mRootView.findViewById(R.id.article_byline);
+        TextView titleView = mRootView.findViewById(R.id.article_title);
+        TextView bylineView = mRootView.findViewById(R.id.article_byline);
         bylineView.setMovementMethod(new LinkMovementMethod());
-        TextView bodyView = (TextView) mRootView.findViewById(R.id.article_body);
+        TextView bodyView = mRootView.findViewById(R.id.article_body);
 
         if (mCursor != null) {
             mRootView.setAlpha(0);
@@ -212,20 +220,19 @@ public class ArticleDetailFragment extends Fragment implements
             Date publishedDate = parsePublishedDate();
             if (!publishedDate.before(START_OF_EPOCH.getTime())) {
                 bylineView.setText(Html.fromHtml(
+                        String.format(getString(R.string.byline),
                         DateUtils.getRelativeTimeSpanString(
                                 publishedDate.getTime(),
                                 System.currentTimeMillis(), DateUtils.HOUR_IN_MILLIS,
-                                DateUtils.FORMAT_ABBREV_ALL).toString()
-                                + " by <font color='#ffffff'>"
-                                + mCursor.getString(ArticleLoader.Query.AUTHOR)
-                                + "</font>"));
+                                DateUtils.FORMAT_ABBREV_ALL).toString(),
+                                mCursor.getString(ArticleLoader.Query.AUTHOR))));
 
             } else {
                 // If date is before 1902, just show the string
                 bylineView.setText(Html.fromHtml(
-                        outputFormat.format(publishedDate) + " by <font color='#ffffff'>"
-                        + mCursor.getString(ArticleLoader.Query.AUTHOR)
-                                + "</font>"));
+                        String.format(getString(R.string.byline),
+                                outputFormat.format(publishedDate),
+                                mCursor.getString(ArticleLoader.Query.AUTHOR))));
 
             }
             bodyView.setText(Html.fromHtml(mCursor.getString(ArticleLoader.Query.BODY).replaceAll("(\r\n|\n)", "<br />")));
@@ -247,9 +254,9 @@ public class ArticleDetailFragment extends Fragment implements
                     });
         } else {
             mRootView.setVisibility(View.GONE);
-            titleView.setText("N/A");
-            bylineView.setText("N/A" );
-            bodyView.setText("N/A");
+            titleView.setText(getString(R.string.not_applicable));
+            bylineView.setText(getString(R.string.not_applicable));
+            bodyView.setText(getString(R.string.not_applicable));
         }
     }
 
@@ -274,6 +281,7 @@ public class ArticleDetailFragment extends Fragment implements
             mCursor = null;
         }
 
+        mProgressBar.setVisibility(View.GONE);
         bindViews();
 
     }

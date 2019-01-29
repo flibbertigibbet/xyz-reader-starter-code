@@ -8,5 +8,7 @@
     <string name="action_share">Share</string>
 
     <string name="up">Up</string>
+    <string name="byline"><font color="@color/white" />%1$s by %2$s</string>
+    <string name="not_applicable">N/A</string>
 
 </resources>

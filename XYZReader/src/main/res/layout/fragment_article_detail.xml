@@ -1,5 +1,6 @@
 <com.example.xyzreader.ui.DrawInsetsCoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/draw_insets_frame_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -96,6 +97,7 @@
         android:layout_height="@dimen/image_button_size"
         android:src="@drawable/ic_share"
         android:elevation="@dimen/fab_elevation"
-        android:contentDescription="@string/action_share" />
+        android:contentDescription="@string/action_share"
+        tools:targetApi="lollipop" />
 
 </com.example.xyzreader.ui.DrawInsetsCoordinatorLayout>
